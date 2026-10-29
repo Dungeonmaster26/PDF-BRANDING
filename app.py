@@ -5,6 +5,9 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import os
 
+# --- BASE DIRECTORY FIX FOR CLOUD DEPLOYMENT ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 st.set_page_config(page_title="PDF Cleaner & Branding Tool", page_icon="📚", layout="centered")
 
 st.title("📚 PDF Cleaner & Custom Brand Tool")
@@ -76,15 +79,16 @@ if st.button("🚀 Process & Clean PDF", type="primary"):
             except Exception:
                 clean_pages_list = []
 
-            input_path = "temp_input.pdf"
-            output_path = "Cleaned_Document.pdf"
+            input_path = os.path.join(BASE_DIR, "temp_input.pdf")
+            output_path = os.path.join(BASE_DIR, "Cleaned_Document.pdf")
             
             with open(input_path, "wb") as f:
                 f.write(uploaded_pdf.getbuffer())
                 
-            # Permanent local asset paths
-            logo_path = "logo.png"
-            yt_logo_path = "youtube_logo.png"
+            # Permanent cloud-safe asset paths
+            logo_path = os.path.join(BASE_DIR, "logo.png")
+            yt_logo_path = os.path.join(BASE_DIR, "youtube_logo.png")
+            font_path = os.path.join(BASE_DIR, "AveriaSansLibre-Bold.ttf")
 
             try:
                 doc = fitz.open(input_path)
@@ -149,10 +153,10 @@ if st.button("🚀 Process & Clean PDF", type="primary"):
                     pil_img = Image.fromarray(cv2.cvtColor(img_color, cv2.COLOR_RGB2BGR))
                     draw = ImageDraw.Draw(pil_img)
 
-                    # Fonts
+                    # Fonts using absolute paths
                     try:
-                        font_title = ImageFont.truetype("AveriaSansLibre-Bold.ttf", int(64 * scale))
-                        font_pill = ImageFont.truetype("AveriaSansLibre-Bold.ttf", int(52 * scale))
+                        font_title = ImageFont.truetype(font_path, int(64 * scale))
+                        font_pill = ImageFont.truetype(font_path, int(52 * scale))
                         font_tagline = ImageFont.truetype("arial.ttf", int(15 * scale))
                         font_page_num = ImageFont.truetype("arialbd.ttf", int(22 * scale))
                         font_footer = ImageFont.truetype("arialbd.ttf", int(36 * scale))
@@ -222,7 +226,7 @@ if st.button("🚀 Process & Clean PDF", type="primary"):
                     # Draw Footer on pages > 1
                     if current_page_1_indexed > 1:
                         page_str = f"( {current_page_1_indexed} )"
-                        mid_text = "      Join YouTube  "
+                        mid_text = "     Join YouTube  "
                         suffix_text = f"  {custom_footer_text}"
                         
                         w_page = font_page_num.getbbox(page_str)[2] - font_page_num.getbbox(page_str)[0]
