@@ -274,7 +274,7 @@ if st.button("🚀 Process & Clean PDF", type="primary"):
                             
                         draw.text((current_x, footer_y), suffix_text, fill=(50, 50, 50), font=font_footer)
 
-                                        img_color = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+                        img_color = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
                     success, encoded_img = cv2.imencode(".jpg", img_color, [cv2.IMWRITE_JPEG_QUALITY, 95])
                     if success:
                         # Match page size precisely to the high-res image to prevent any stretching or distortion
