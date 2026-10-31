@@ -274,11 +274,17 @@ if st.button("🚀 Process & Clean PDF", type="primary"):
                             
                         draw.text((current_x, footer_y), suffix_text, fill=(50, 50, 50), font=font_footer)
 
-                    img_color = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+                                        img_color = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
                     success, encoded_img = cv2.imencode(".jpg", img_color, [cv2.IMWRITE_JPEG_QUALITY, 95])
                     if success:
-                        new_page = new_doc.new_page(width=rect.width, height=rect.height)
-                        new_page.insert_image(rect, stream=encoded_img.tobytes())
+                        # Match page size precisely to the high-res image to prevent any stretching or distortion
+                        page_w = pix.w * 72 / 300
+                        page_h = pix.h * 72 / 300
+                        target_rect = fitz.Rect(0, 0, page_w, page_h)
+                        new_page = new_doc.new_page(width=page_w, height=page_h)
+                        new_page.insert_image(target_rect, stream=encoded_img.tobytes())
+
+
 
                 new_doc.save(output_path, garbage=4, deflate=True)
                 new_doc.close()
